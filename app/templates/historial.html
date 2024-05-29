@@ -1,0 +1,19 @@
+{% extends './layout.html' %}
+
+{% block title%}Historial{% endblock %}
+
+{% block body %}
+<h1>Historial de Sesiones</h1>
+<ul>
+    {% for sesion in data['sesiones'] %}
+    <li>
+        <div class="card">
+            <h2>Sesión {{ sesion[0] }}</h2>
+            <p>Fecha: {{ sesion[1] }}</p>
+            <a href="{{ url_for('detalle_sesion', id_sesion=sesion[0]) }}">Ver más</a>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+<p>{{ data['mensaje'] }}</p>
+{% endblock %}

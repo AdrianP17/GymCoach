@@ -1,0 +1,16 @@
+{% extends './layout.html' %}
+
+{% block title%}Asistente{% endblock %}
+
+{% block body %}
+<h2 class="container-title">Asistente</h2>
+<form method="POST">
+    <label for="user_input">Escribe tu pregunta o solicitud:</label><br>
+    <input type="text" id="user_input" name="user_input"><br><br>
+    <input type="submit" value="Enviar">
+</form>
+<div>
+    <h2>Respuesta del Asistente:</h2>
+    <p>{{ data['respuesta'] }}</p>
+</div>
+{% endblock %}

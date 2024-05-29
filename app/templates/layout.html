@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title%}{% endblock %}</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/layout.css')}}">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <div class="header">
+        <h3 class="logo">GymCoach</h3>
+        <a href="#" class="profile">
+            <i class='bx bx-user-circle'></i>
+            <p>Perfil</p>
+        </a>
+    </div>
+    <div class="page">
+        <div class="menu">
+            <ul class="menu__lista">
+                <a href="{{ url_for('dashboard') }}" class="menu__icon">
+                    <i class='bx bx-bar-chart-square'></i>
+                    <p>Dashboard</p>
+                </a>
+                
+                <a href="{{ url_for('rutinas') }}" class="menu__icon">
+                    <i class='bx bx-book-content'></i>
+                    <p>Rutinas</p>
+                </a>
+                <a a href="{{ url_for('historial') }}" class="menu__icon">
+                    <i class='bx bx-history'></i>
+                    <p>Historial</p>
+                </a>
+                <a a href="{{ url_for('asistente') }}" class="menu__icon">
+                    <i class='bx bx-support' ></i>
+                    <p>Asistente</p>
+                </a>
+            </ul>
+        </div>
+        <div class="container">
+            {% block body %}
+            {% endblock %}
+        </div>
+    </div>
+    
+</body>
+<script src="/app/static/js/main.js"></script>
+</html>
