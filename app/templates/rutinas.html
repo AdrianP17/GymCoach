@@ -1,0 +1,18 @@
+{% extends './layout.html' %}
+
+{% block title%}Rutinas{% endblock %}
+
+{% block body %}
+<h1>Mis Rutinas</h1>
+{% if data.numero_rutinas > 0 %}
+<ul>
+    {% for rutina in data['rutinas'] %}
+    <li>{{ rutina[1] }} <a href="#">Editar</a> <a href="#">Iniciar Sesión</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
+<p>Total de rutinas: {{ data['numero_rutinas'] }}</p>
+<p>{{ data['mensaje'] }}</p>
+<a href="#">Crear Nueva Rutina</a>
+
+{% endblock %}

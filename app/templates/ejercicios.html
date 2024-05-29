@@ -1,0 +1,18 @@
+{% extends './layout.html' %}
+
+{% block title%}Ejercicios{% endblock %}
+
+{% block body %}
+<h1>Lista de musculos</h1>
+    {% if data.numero_ejercicios > 0 %}
+    <ul>
+        {% for musculo in data['musculos'] %}
+        <li>{{ musculo[1] }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <p>No hay ejercicios</p>
+    {% endif %}
+    <p>Total de músculos: {{ data['numero_ejercicios'] }}</p>
+    <p>{{ data['mensaje'] }}</p>
+{% endblock %}

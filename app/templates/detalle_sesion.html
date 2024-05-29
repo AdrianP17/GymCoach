@@ -1,0 +1,13 @@
+{% extends './layout.html' %}
+
+{% block title%}Detalle de sesion{% endblock %}
+
+{% block body %}
+<h1>Detalles de la Sesión</h1>
+<ul>
+    {% for detalle in data['detalles'] %}
+    <li>Ejercicio: {{ detalle[0] }} - Sets: {{ detalle[1] }} - Repeticiones: {{ detalle[2] }}</li>
+    {% endfor %}
+</ul>
+<p>{{ data['mensaje'] }}</p>
+{% endblock %}
