@@ -1,0 +1,136 @@
+{% extends './layout.html' %}
+
+{% block title %}
+    Crear Rutina
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h2 class="container-title">Crear Rutina</h2>
+    <form method="POST">
+        <div>
+            <label for="nombre_rutina">Nombre de la Rutina:</label><br>
+            <input type="text" id="nombre_rutina" name="nombre_rutina" required><br><br>
+        </div>
+        <div id="ejercicios-container">
+            <div class="ejercicio-row">
+                <label>Ejercicio:</label>
+                <select name="ejercicio" required>
+                    {% for ejercicio in ejercicios %}
+                    <option value="{{ ejercicio[0] }}">{{ ejercicio[1] }}</option>
+                    {% endfor %}
+                </select>
+                <label>Descanso (segundos):</label>
+                <input type="number" name="descanso" required>
+                <label>Sets:</label>
+                <input type="number" name="sets" required>
+                <button type="button" onclick="removeEjercicio(this)">Eliminar</button>
+            </div>
+        </div>
+        <button type="button" onclick="addEjercicio()">Añadir Ejercicio</button><br><br>
+        <input type="submit" value="Crear Rutina">
+    </form>
+</div>
+<script>
+    function addEjercicio() {
+        const container = document.getElementById('ejercicios-container');
+        const newEjercicio = document.createElement('div');
+        newEjercicio.classList.add('ejercicio-row');
+        newEjercicio.innerHTML = `
+            <label>Ejercicio:</label>
+            <select name="ejercicio" required>
+                {% for ejercicio in ejercicios %}
+                <option value="{{ ejercicio[0] }}">{{ ejercicio[1] }}</option>
+                {% endfor %}
+            </select>
+            <label>Descanso (segundos):</label>
+            <input type="number" name="descanso" required>
+            <label>Sets:</label>
+            <input type="number" name="sets" required>
+            <button type="button" onclick="removeEjercicio(this)">Eliminar</button>
+        `;
+        container.appendChild(newEjercicio);
+    }
+
+    function removeEjercicio(button) {
+        const row = button.parentElement;
+        row.remove();
+    }
+    </script>
+    <style>
+        body {
+            background-color: #181818;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #3f3f3f2a;
+            border-radius: 10px;
+        }
+        h2 {
+            color: #782ADB;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .input-field {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #2a2a2a;
+            color: white;
+        }
+        .small-input {
+            width: 60px;
+        }
+        .button {
+            background-color: #782ADB;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #5d1ea1;
+        }
+        .submit-button {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .exercise-group {
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .exercise-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sets-container {
+            margin-top: 10px;
+        }
+        .set-row {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .set-row span {
+            margin-right: 10px;
+        }
+        .remove-set {
+            margin-left: 10px;
+        }
+        .small-button {
+            padding: 5px;
+        }
+    </style>
+{% endblock %}

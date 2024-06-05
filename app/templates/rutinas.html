@@ -3,16 +3,34 @@
 {% block title%}Rutinas{% endblock %}
 
 {% block body %}
-<h1>Mis Rutinas</h1>
-{% if data.numero_rutinas > 0 %}
-<ul>
-    {% for rutina in data['rutinas'] %}
-    <li>{{ rutina[1] }} <a href="#">Editar</a> <a href="#">Iniciar Sesión</a></li>
-    {% endfor %}
-</ul>
-{% endif %}
+<h1 class="title">Mis Rutinas</h1>
 <p>Total de rutinas: {{ data['numero_rutinas'] }}</p>
-<p>{{ data['mensaje'] }}</p>
-<a href="#">Crear Nueva Rutina</a>
+<div class="rutina__container">
+    {% if data.numero_rutinas > 0 %}
+        {% for rutina in data['rutinas'] %}
+            <div class="rutina">
+                <div class="rutina-nombre">
+                    <span class="rutina__title">{{ rutina[1] }}</span>
+                </div>
+                <div class="rutina__options">
+                    <div>
+                        <i class='bx bx-edit'></i>
+                        <a class="edit" href="{{ url_for('editar_rutina', id=rutina[0]) }}"><span>Editar</span></a>
+                    </div>
+                    <div>
+                        <i class='bx bx-trash'></i>
+                        <form action="{{ url_for('eliminar_rutina', id=rutina[0]) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta rutina?');">
+                            <button type="submit" class="delete-button"><span>Eliminar</span></button>
+                        </form>
+                    </div>
+                    
+                </div>
+                <a class="btn" href="{{ url_for('empezar_rutina', id=rutina[0]) }}">Empezar rutina</a>
+            </div>
+        {% endfor %}
+    {%endif%}
+</div>
+<a class="btn-crear-rutina" href="{{ url_for('crear_rutina') }}">Crear Nueva Rutina</a>
+
 
 {% endblock %}

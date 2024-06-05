@@ -1,13 +1,47 @@
 {% extends './layout.html' %}
 
-{% block title%}Detalle de sesion{% endblock %}
+{% block title %}
+    Detalles de la Sesión
+{% endblock %}
 
 {% block body %}
-<h1>Detalles de la Sesión</h1>
-<ul>
-    {% for detalle in data['detalles'] %}
-    <li>Ejercicio: {{ detalle[0] }} - Sets: {{ detalle[1] }} - Repeticiones: {{ detalle[2] }}</li>
-    {% endfor %}
-</ul>
-<p>{{ data['mensaje'] }}</p>
+    <div class="container__tabla">
+        <h2 class="section-subtitle">Detalles de la Sesión</h2>
+        {% if data['detalles'] %}
+        {% for nombre_ejercicio, ejercicio in data['ejercicios'].items() %}
+        <div class="exercise-group">
+            <div class="title-group">
+                <i class='bx bx-dumbbell title-icon' ></i>
+                <span>{{ nombre_ejercicio }}</span>
+                <p class="tag"># {{ ', '.join(ejercicio.musculos) }}</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Set</th>
+                        <th>Reps</th>
+                        <th>Peso (kg)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for set in ejercicio.sets %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ set.reps }}</td>
+                        <td>{{ set.peso }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+        </div>
+        {% endfor %}
+        <div class="session-summary">
+            <p>Volumen total: <span>{{ data['volumen_total'] }} kg</span></p>
+            <p>Sets realizados: <span>{{ data['sets_realizados'] }}</span></p>
+            <p>Músculos trabajados: <span>{{ data['musculos_trabajados'] }}</span></p>
+        </div>
+        {% endif %}
+        <p>{{data['mensaje']}}</p>
+    </div>
 {% endblock %}
