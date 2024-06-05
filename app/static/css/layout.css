@@ -1,14 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500&display=swap');
-
 *{
     box-sizing: 0;
     padding: 0;
     margin: 0;
+    font-family: 'Chillax', sans-serif;
 }
 :root{
-    --background: #181818 ;
-    --lighter-background: #3f3f3f2a;
-    --first-color: #782ADB;
+    --background: #0C0C0E ;
+    --lighter-background: #141416;
+    --first-color: #894cda;
 }
 a{
     text-decoration: none;
@@ -19,8 +18,13 @@ li{
 }
 body{
     background-color: var(--background);
-    font-family: 'Ubuntu', sans-sterif;
+    font-family: 'Chillax', sans-serif;
     color: white;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 .header{
     display: flex;
@@ -33,9 +37,8 @@ body{
     font-size: 1.6rem;
 }
 .profile{
-
-    background-color: var(--first-color);
-    box-shadow: 1px 1px 20px var(--first-color);    
+    /* box-shadow: 1px 1px 10px white;    */
+    border: 1px solid var(--lighter-background); 
     display: flex;
     gap: 1rem;
     font-size: 1.2rem;
@@ -49,7 +52,11 @@ body{
 .profile > p{
     font-weight: 400;
 }
-
+.title{
+    font-size: 2rem;
+    font-weight: 500;
+    margin: 20px 0;
+}
 .menu{
     height: calc(100vh - 70px);
     display: flexbox;
@@ -66,23 +73,26 @@ body{
 
 .page{
     display: flex;
+    height: auto;
 }
 .menu__icon{
     display: flex;
     padding: 10px 20px;
     font-size: 18px;
     gap: 10px;
-    transition: 0.3s all;
+    transition: 0.3s color;
     border-radius: 8px;
     cursor: pointer;
+    align-items: center;
+    color: #9a9999;
+    font-weight: 500;
 }
 .menu__icon:hover{
-    background-color: var(--first-color);
-    box-shadow: 1px 1px 20px var(--first-color);    
+    background-color: var(--lighter-background);
 }
 
 .container{
-    background-color: var(--lighter-background);
+    border: 1px solid var(--lighter-background);
     border-radius: 10px;
     width: 100%;
     margin: 10px 20px 0 10px;
@@ -90,4 +100,318 @@ body{
 }
 .container-title{
     font-size: 2rem;
+}
+
+.rutina__container{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+
+}
+.rutina{
+    align-items: center;
+    background-color: var(--background);
+    width: 200px;
+    height: 200px;
+    border: 1px solid var(--lighter-background);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    transition: box-shadow 0.1s;
+    position: relative;
+}
+.rutina:hover{
+    box-shadow: 1px 1px 5px white;
+}
+
+.rutina-nombre{
+    width: 200px;
+    overflow: hidden;
+}
+.rutina__title{
+    font-size: 1.4rem;
+    font-weight: 500;
+    text-overflow: ellipsis;
+}
+.rutina__options{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 10px 0;
+}
+.rutina__options > div{
+    display: flex;
+    gap: 5px;
+}
+.rutina__options > div > i{
+    font-size: 20px;
+}
+.btn{
+    display: inline-block;
+    position: absolute;
+    bottom: 20px;
+    color: white;
+    border: 1px solid white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s all;
+    text-align: center;
+}
+.delete-button{
+    background: none;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+.delete-button:hover{
+    text-decoration: underline;
+}
+.edit:hover{
+    text-decoration: underline;
+}
+.delete{
+    color: white;
+    cursor: pointer;
+}
+.delete>span{
+    margin-left: 5px;
+}
+.btn-crear-rutina{
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 20px;
+    background-color: white;
+    border-radius: 8px;
+    color: var(--background);
+    font-weight: 500;
+}
+
+.historial__card{
+    display: flex;
+    background-color: var(--background);
+    box-shadow: 1px 1px 20px var(--background);   
+    padding: 10px;
+    align-items: center;
+    transition: background-color 0.2s;
+    justify-content: space-around;
+}
+.historial__card:first-child{
+    border-radius: 10px 10px 0 0;
+}
+.historial__card:last-child{
+    border-radius: 0 0 10px 10px;
+}
+.historial__card:hover{
+    background-color: var(--lighter-background);
+}
+.historial__title{
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+.historial__desc{
+    font-size: 1rem;
+    font-weight: 200;
+}
+/* .historial__container{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+} */
+
+/* EDITAR RUTINA */
+.container__tabla {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+}
+.input-field {
+    width: calc(100% - 20px);
+    padding: 10px 0;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--background);
+    color: white;
+    outline: none;
+    text-align: center;
+}
+.small-input {
+    width: 36px;
+}
+.button {
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 0;
+    text-align: center;
+}
+.submit-button {
+    width: 100%;
+    color: black;
+    font-size: 20px;
+    margin-top: 20px;
+    font-weight: 600;
+}
+.title-group{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 28px;
+    font-weight: 500;
+}
+.exercise-group {
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+.exercise-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.sets-container {
+    margin-top: 10px;
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 20px 40px;
+}
+.set-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+    margin-top: 10px;
+}
+.table-header{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+}
+.set-row span {
+    margin-right: 10px;
+}
+.remove-set {
+    margin-left: 10px;
+}
+.small-button {
+    cursor: pointer;
+    padding: 5px;
+    background: none;
+    border: none;
+    color: white;
+}
+.remove-exercise{
+    font-size: 25px;
+    transition: transform 0.3s;
+}
+.remove-exercise:hover{
+    transform: translateY(-2px);
+}
+.title-icon{
+    font-size: 32px;
+}
+.add-exercise{
+    border: 1px solid white;
+}
+select{
+    font-size: 28px;
+}
+option{
+    font-size: 18px;
+}
+
+/* DETALLE SESION */
+table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 1px solid white;
+    margin-top: 20px;
+}
+th{
+    font-size: 18px;
+    font-weight: normal;
+}
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+.exercise-group {
+    border-radius: 5px;
+    margin-bottom: 60px;
+}
+.session-summary {
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 18px;
+}
+.session-summary p{
+    margin-bottom: 10px;
+}
+.session-summary span{
+    font-size: 20px;
+    font-weight: 500;
+}
+.tag {
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: semibold;
+    border: 1px solid #969696;
+    color: #969696;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin-right: 10px;
+}
+.section-title{
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+.section-subtitle{
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+.table-header > p{
+    margin: auto;
+}
+.table-header > i{
+    margin: auto;
+}
+.set-row span, .input-field{
+    margin: auto;
+}
+.set-row .input-field{
+    border: 1px solid white;
+}
+.completed{
+    color: rgb(206, 255, 206);
+}
+.cancel-btn{
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: var(--background);
+    color: white;
+    border: none;
+}
+.cancel-btn:hover{
+    text-decoration: underline;
+}
+.toggle-btn{
+    cursor: pointer;
+    outline: none;
+    border: none;
+    background-color: var(--background);
+    color: white;
+}
+.toggle-btn>i{
+    font-size: 28px;
+    transition: color 0.3s;
 }

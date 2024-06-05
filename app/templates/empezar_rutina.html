@@ -1,0 +1,139 @@
+{% extends './layout.html' %}
+
+{% block title %}
+    Empezar Rutina
+{% endblock %}
+
+{% block body %}
+<div class="container__tabla">
+    <h2>Empezar Rutina: {{ rutina[0] }}</h2>
+    <div id="timer" class="timer">00:00:00</div>
+    <div id="rest-timer" class="rest-timer" style="display: none;">Descanso: 00</div>
+    <form method="POST" onsubmit="stopTimer()">
+        <div id="exercise-container">
+            {% for ejercicio_id, ejercicio in grouped_ejercicios.items() %}
+            <div class="exercise-group" data-exercise-id="{{ ejercicio_id }}">
+                <div class="exercise-row">
+                    <div class="title-group">
+                        <i class='bx bx-dumbbell title-icon' ></i>
+                        <span>{{ ejercicio['nombre'] }}</span>
+                    </div>
+                    <div class="row-header">
+                        <i class='bx bx-time-five'></i>
+                        <span>Descanso</span>
+                        <input type="number" name="descanso_{{ ejercicio_id }}" placeholder="0" value="{{ ejercicio['descanso'] }}" class="input-field small-input" readonly>
+                        <span>seg</span>
+                    </div>
+                </div>
+                <div class="sets-container">
+                    <div class="table-header">
+                        <p class="row-header">Set</p>
+                        <p class="row-header">Repeticiones</p>
+                        <p class="row-header">Peso (kg)</p>
+                        <p class="row-header">Completado</p>
+                    </div>
+                    {% for set in ejercicio.sets %}
+                    <div class="set-row" data-descanso="{{ ejercicio['descanso'] }}">
+                        <span>Set {{ loop.index }}</span>
+                        <input type="hidden" name="set_id" value="{{ set.idSet }}">
+                        <input type="hidden" name="ejercicio_id_{{ set.idSet }}" value="{{ ejercicio_id }}">
+                        <input type="number" name="reps" placeholder="-" value="{{ set.reps }}" class="input-field small-input" required>
+                        <input type="number" name="peso" placeholder="-" value="{{ set.peso }}" class="input-field small-input" required>
+                        <button type="button" class="toggle-btn" onclick="toggleCompleted(this)">
+                            <i class='bx bx-check-square'></i>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <input type="hidden" name="duracion" id="duracion">
+        <button type="submit" class="button submit-button">Finalizar Rutina</button>
+    </form>
+    <button class="cancel-btn" onclick="cancelarRutina()">Cancelar Rutina</button>
+</div>
+    <script>
+        let totalTimer;
+        let restTimer;
+        let startTime;
+        let currentRestTime = 0;
+
+        function startTimer() {
+            startTime = new Date();
+            totalTimer = setInterval(updateTimer, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(totalTimer);
+            clearInterval(restTimer);
+            const duration = new Date(new Date() - startTime).toISOString().substr(11, 8);
+            document.getElementById('duracion').value = duration;
+        }
+
+        function updateTimer() {
+            const currentTime = new Date(new Date() - startTime);
+            const hours = String(currentTime.getUTCHours()).padStart(2, '0');
+            const minutes = String(currentTime.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(currentTime.getUTCSeconds()).padStart(2, '0');
+            document.getElementById('timer').innerText = `${hours}:${minutes}:${seconds}`;
+        }
+
+        function toggleCompleted(button) {
+        const parentSetRow = button.parentElement;
+        const isCompleted = parentSetRow.classList.toggle('completed-set');
+
+        if (isCompleted) {
+            button.innerHTML = "<i class='bx bxs-check-square completed''></i>";
+            const descanso = parentSetRow.getAttribute('data-descanso');
+            currentRestTime = parseInt(descanso);
+            startRestTimer(currentRestTime);
+        } else {
+            button.innerHTML = "<i class='bx bx-check-square'></i>";
+            clearInterval(restTimer);
+            document.getElementById('rest-timer').style.display = 'none';
+        }
+    }
+
+        function startRestTimer(duration) {
+            clearInterval(restTimer);
+            let restTime = duration;
+            const restTimerElement = document.getElementById('rest-timer');
+            restTimerElement.style.display = 'block';
+            restTimerElement.innerText = `Descanso: ${restTime} segundos`;
+
+            restTimer = setInterval(() => {
+                restTime -= 1;
+                restTimerElement.innerText = `Descanso: ${restTime} segundos`;
+                if (restTime <= 0) {
+                    clearInterval(restTimer);
+                    restTimerElement.style.display = 'none';
+                    alert('Tiempo de descanso terminado');
+                }
+            }, 1000);
+        }
+
+        function cancelarRutina() {
+            clearInterval(totalTimer);
+            clearInterval(restTimer);
+            window.location.href = "{{ url_for('rutinas') }}";
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            startTimer();
+        });
+
+        document.querySelector('form').addEventListener('submit', function(event) {
+        const completedSets = document.querySelectorAll('.completed-set');
+        if (completedSets.length === 0) {
+            event.preventDefault();
+            alert('No has completado ningún ejercicio.');
+        } else {
+            completedSets.forEach(set => {
+                set.querySelectorAll('input').forEach(input => input.disabled = false);
+            });
+        }
+    });
+    </script>
+        
+{% endblock %}

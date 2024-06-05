@@ -1,16 +1,86 @@
 {% extends './layout.html' %}
 
-{% block title%}Asistente{% endblock %}
+{% block title %}Asistente{% endblock %}
 
 {% block body %}
-<h2 class="container-title">Asistente</h2>
-<form method="POST">
-    <label for="user_input">Escribe tu pregunta o solicitud:</label><br>
-    <input type="text" id="user_input" name="user_input"><br><br>
-    <input type="submit" value="Enviar">
-</form>
-<div>
-    <h2>Respuesta del Asistente:</h2>
-    <p>{{ data['respuesta'] }}</p>
+<div class="container">
+    <h2 class="container-title">Asistente</h2>
+    <div class="chat-container">
+        <div class="messages">
+            {% if data['respuesta'] %}
+                <div class="message user-message">
+                    <p>{{ request.form['user_input'] }}</p>
+                </div>
+                <div class="message assistant-message">
+                    <p>{{ data['respuesta'] }}</p>
+                </div>
+            {% endif %}
+        </div>
+        <form method="POST" class="chat-form">
+            <input type="text" id="user_input" name="user_input" placeholder="Escribe tu pregunta o solicitud..." required>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
 </div>
+<style>
+
+    .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .container-title {
+        color: #782ADB;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 600px;
+        justify-content: space-between;
+    }
+    .messages {
+        flex-grow: 1;
+        overflow-y: auto;
+        margin-bottom: 20px;
+    }
+    .message {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 10px;
+    }
+    .user-message {
+        background-color: #282828;
+        text-align: right;
+    }
+    .assistant-message {
+        background-color: #3f3f3f;
+        text-align: left;
+    }
+    .chat-form {
+        display: flex;
+    }
+    .chat-form input[type="text"] {
+        flex-grow: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #2a2a2a;
+        color: white;
+    }
+    .chat-form button {
+        background-color: #782ADB;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+    .chat-form button:hover {
+        background-color: #5d1ea1;
+    }
+</style>
 {% endblock %}

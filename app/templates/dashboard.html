@@ -1,38 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <style>
-        body {
-            background-color: #181818;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            background-color: #3f3f3f2a;
-            border-radius: 10px;
-        }
-        h2 {
-            color: #782ADB;
-            text-align: center;
-        }
-        .user-info {
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Dashboard</h2>
-        <div class="user-info">
-            <p>Bienvenido, {{ usuario }}</p>
-        </div>
-        <a href="{{ url_for('logout') }}">Cerrar sesión</a>
-    </div>
-</body>
-</html>
+{% extends './layout.html' %}
+
+{% block title%}Dashboard{% endblock %}
+
+{% block body %}
+<h1 class="title">Bienvenido {{ usuario }}</h1>
+<a href="{{ url_for('logout') }}">Cerrar sesión</a>
+
+{% endblock %}

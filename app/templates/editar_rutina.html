@@ -1,0 +1,59 @@
+{% extends './layout.html' %}
+
+{% block title %}
+    Editar Rutina
+{% endblock %}
+
+{% block body %}
+<div class="container__tabla">
+    <h2 class="section-subtitle">Editar Rutina</h2>
+    <form method="POST">
+        <input type="text" name="nombre_rutina" value="{{ rutina[0] }}" placeholder="Nombre de la Rutina" class="input-field section-title" required>
+        <div id="exercise-container">
+            {% for ejercicio in ejercicios_rutina %}
+            <div class="ejercicio-row">
+                <label>Ejercicio:</label>
+                <select name="ejercicio" required>
+                    {% for ej in todos_ejercicios %}
+                    <option value="{{ ej[0] }}" {% if ej[0] == ejercicio[1] %}selected{% endif %}>{{ ej[1] }}</option>
+                    {% endfor %}
+                </select>
+                <label>Descanso (segundos):</label>
+                <input type="number" name="descanso" value="{{ ejercicio[3] }}" required>
+                <label>Sets:</label>
+                <input type="number" name="sets" value="{{ ejercicio[4] }}" required>
+                <button type="button" onclick="removeEjercicio(this)">Eliminar</button>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="add-exercise button" onclick="addEjercicio()">+ Agregar Ejercicio</div>
+        <button type="submit" class="button submit-button">Actualizar Rutina</button>
+    </form>
+</div>
+<script>
+    function addEjercicio() {
+        const container = document.getElementById('exercise-container');
+        const newEjercicio = document.createElement('div');
+        newEjercicio.classList.add('ejercicio-row');
+        newEjercicio.innerHTML = `
+            <label>Ejercicio:</label>
+            <select name="ejercicio" required>
+                {% for ejercicio in todos_ejercicios %}
+                <option value="{{ ejercicio[0] }}">{{ ejercicio[1] }}</option>
+                {% endfor %}
+            </select>
+            <label>Descanso (segundos):</label>
+            <input type="number" name="descanso" required>
+            <label>Sets:</label>
+            <input type="number" name="sets" required>
+            <button type="button" onclick="removeEjercicio(this)">Eliminar</button>
+        `;
+        container.appendChild(newEjercicio);
+    }
+
+    function removeEjercicio(button) {
+        const row = button.parentElement;
+        row.remove();
+    }
+</script>
+{% endblock %}
