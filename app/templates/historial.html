@@ -7,14 +7,14 @@
     <div class="historial__container">
         {% for sesion in data['sesiones'] %}
         
-            <div class="historial__card">
-                <h2 class="historial__title">Sesión {{ sesion[0] }}</h2>
-                <p class="historial__desc">Fecha: {{ sesion[1] }}</p>
-                <p class="historial__desc">Duración: {{ sesion[2] }}</p>
-                <a class="" href="{{ url_for('detalle_sesion', id_sesion=sesion[0]) }}">Ver más</a>
+            <div class="historial__card" >
+                <h2 class="historial__title">{{ sesion[1] }}</h2>
+                <p class="historial__desc"><i class='bx bx-time-five' ></i>  {{ sesion[2] }}</p>
+                <p class="historial__desc"><i class='bx bx-dumbbell' ></i>  {{ sesion[3] }} kg</p>
+                <p class="historial__desc"><i class='bx bx-check-square' ></i>  {{ sesion[4] }} sets</p>
+                <a href="{{ url_for('detalle_sesion', id_sesion=sesion[0]) }}" class="action-card"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgb(255, 255, 255);transform: ;msFilter:;"><path d="m11.293 17.293 1.414 1.414L19.414 12l-6.707-6.707-1.414 1.414L15.586 11H6v2h9.586z"></path></svg></a>
+            </div>
+            {% endfor %}
             </div>
         
-        {% endfor %}
-    </div>
-<p>{{ data['mensaje'] }}</p>
 {% endblock %}

@@ -5,49 +5,73 @@
 {% endblock %}
 
 {% block body %}
-<div class="container">
-    <h2 class="container-title">Crear Rutina</h2>
+<a href="{{ url_for('rutinas') }}" class="back"><i class='bx bx-arrow-back'></i></a>
+<div class="container__tabla">
+    <h2 class="section-subtitle">Crear Rutina</h2>
     <form method="POST">
-        <div>
-            <label for="nombre_rutina">Nombre de la Rutina:</label><br>
-            <input type="text" id="nombre_rutina" name="nombre_rutina" required><br><br>
-        </div>
-        <div id="ejercicios-container">
-            <div class="ejercicio-row">
-                <label>Ejercicio:</label>
-                <select name="ejercicio" required>
-                    {% for ejercicio in ejercicios %}
-                    <option value="{{ ejercicio[0] }}">{{ ejercicio[1] }}</option>
-                    {% endfor %}
-                </select>
-                <label>Descanso (segundos):</label>
-                <input type="number" name="descanso" required>
-                <label>Sets:</label>
-                <input type="number" name="sets" required>
-                <button type="button" onclick="removeEjercicio(this)">Eliminar</button>
+        <input type="text" name="nombre_rutina" placeholder="Nombre de la Rutina" class="input-field section-title" required>   
+        <div id="exercise-container">
+            <div class="exContainer">
+                <div class="exercise-row">
+                    <div class="title-group">
+                        <i class='bx bx-dumbbell title-icon' ></i>
+                        <select name="ejercicio" required>
+                            {% for ejercicio in ejercicios %}
+                                <option value="{{ ejercicio[0] }}">{{ ejercicio[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <a onclick="removeEjercicio(this.parentElement)"><i class='bx bx-trash remove-exercise' ></i></a>
+                    </div>
+                <div class="exercise-row">
+                        <div>
+                            <label>Sets:</label>
+                            <input type="number" name="sets" placeholder="-" class="input-field small-input border"  required>
+                        </div>
+                        <div class="row-header">
+                                    <i class='bx bx-time-five'></i>
+                                    <span>Descanso</span>
+                                    <input type="number" name="descanso" placeholder="-" class="input-field small-input border" required>
+                                    <span>seg</span>
+                        </div>
+                </div>
             </div>
         </div>
-        <button type="button" onclick="addEjercicio()">Añadir Ejercicio</button><br><br>
-        <input type="submit" value="Crear Rutina">
+        <div class="add-exercise button" onclick="addEjercicio()">+ Agregar Ejercicio</div>
+        <input type="submit" class="button submit-button" value="Crear Rutina">
     </form>
 </div>
 <script>
     function addEjercicio() {
-        const container = document.getElementById('ejercicios-container');
+        const container = document.getElementById('exercise-container');
         const newEjercicio = document.createElement('div');
         newEjercicio.classList.add('ejercicio-row');
         newEjercicio.innerHTML = `
-            <label>Ejercicio:</label>
-            <select name="ejercicio" required>
-                {% for ejercicio in ejercicios %}
-                <option value="{{ ejercicio[0] }}">{{ ejercicio[1] }}</option>
-                {% endfor %}
-            </select>
-            <label>Descanso (segundos):</label>
-            <input type="number" name="descanso" required>
-            <label>Sets:</label>
-            <input type="number" name="sets" required>
-            <button type="button" onclick="removeEjercicio(this)">Eliminar</button>
+            <div class="exContainer">
+                <div class="exercise-row">
+                    <div class="title-group">
+                        <i class='bx bx-dumbbell title-icon' ></i>
+                        <select name="ejercicio" required>
+                            {% for ejercicio in ejercicios %}
+                                <option value="{{ ejercicio[0] }}">{{ ejercicio[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <a onclick="removeEjercicio(this.parentElement)"><i class='bx bx-trash remove-exercise' ></i></a>
+                    </div>
+                <div class="exercise-row">
+                        <div>
+                            <label>Sets:</label>
+                            <input type="number" name="sets" placeholder="-" class="input-field small-input border" required>
+                        </div>
+                        <div class="row-header">
+                                    <i class='bx bx-time-five'></i>
+                                    <span>Descanso</span>
+                                    <input type="number" name="descanso" placeholder="-" class="input-field small-input border" required>
+                                    <span>seg</span>
+                        </div>
+                </div>
+            </div>
         `;
         container.appendChild(newEjercicio);
     }
@@ -57,80 +81,4 @@
         row.remove();
     }
     </script>
-    <style>
-        body {
-            background-color: #181818;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            background-color: #3f3f3f2a;
-            border-radius: 10px;
-        }
-        h2 {
-            color: #782ADB;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .input-field {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 5px;
-            background-color: #2a2a2a;
-            color: white;
-        }
-        .small-input {
-            width: 60px;
-        }
-        .button {
-            background-color: #782ADB;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px 0;
-            text-align: center;
-        }
-        .button:hover {
-            background-color: #5d1ea1;
-        }
-        .submit-button {
-            width: 100%;
-            margin-top: 20px;
-        }
-        .exercise-group {
-            background-color: #2a2a2a;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .exercise-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .sets-container {
-            margin-top: 10px;
-        }
-        .set-row {
-            display: flex;
-            align-items: center;
-            margin-top: 10px;
-        }
-        .set-row span {
-            margin-right: 10px;
-        }
-        .remove-set {
-            margin-left: 10px;
-        }
-        .small-button {
-            padding: 5px;
-        }
-    </style>
 {% endblock %}

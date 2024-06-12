@@ -4,6 +4,15 @@
 
 {% block body %}
 <h1 class="title">Bienvenido {{ usuario }}</h1>
+<div class="card-ai">
+    <h2 class="card-title">
+        Asistente de entrenamiento
+    </h2>
+    <p class="card-description">
+        ¿Necesitas ayuda con tu rutina de entrenamiento? ¡Pregúntame!
+    </p>
+    <a href="{{ url_for('asistente') }}" class="card-ai-btn">Iniciar asistente</a>
+</div>
 <a href="{{ url_for('logout') }}">Cerrar sesión</a>
 
 {% endblock %}

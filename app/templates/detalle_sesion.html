@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container__tabla">
+<a href="{{ url_for('historial') }}" class="back"><i class='bx bx-arrow-back'></i></a>
+<div class="container__tabla">
         <h2 class="section-subtitle">Detalles de la Sesión</h2>
         {% if data['detalles'] %}
         {% for nombre_ejercicio, ejercicio in data['ejercicios'].items() %}
