@@ -5,26 +5,39 @@
 {% endblock %}
 
 {% block body %}
+<a href="{{ url_for('rutinas') }}" class="back"><i class='bx bx-arrow-back'></i></a>
 <div class="container__tabla">
     <h2 class="section-subtitle">Editar Rutina</h2>
     <form method="POST">
         <input type="text" name="nombre_rutina" value="{{ rutina[0] }}" placeholder="Nombre de la Rutina" class="input-field section-title" required>
         <div id="exercise-container">
             {% for ejercicio in ejercicios_rutina %}
-            <div class="ejercicio-row">
-                <label>Ejercicio:</label>
-                <select name="ejercicio" required>
-                    {% for ej in todos_ejercicios %}
-                    <option value="{{ ej[0] }}" {% if ej[0] == ejercicio[1] %}selected{% endif %}>{{ ej[1] }}</option>
-                    {% endfor %}
-                </select>
-                <label>Descanso (segundos):</label>
-                <input type="number" name="descanso" value="{{ ejercicio[3] }}" required>
-                <label>Sets:</label>
-                <input type="number" name="sets" value="{{ ejercicio[4] }}" required>
-                <button type="button" onclick="removeEjercicio(this)">Eliminar</button>
+            <div class="exContainer">
+                <div class="exercise-row">
+                    <div class="title-group">
+                        <i class='bx bx-dumbbell title-icon' ></i>
+                        <select name="ejercicio" required>
+                            {% for ej in todos_ejercicios %}
+                            <option value="{{ ej[0] }}" {% if ej[0] == ejercicio[1] %}selected{% endif %}>{{ ej[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <a onclick="removeEjercicio(this.parentElement)"><i class='bx bx-trash remove-exercise' ></i></a>
+                    </div>
+                <div class="exercise-row">
+                        <div>
+                            <label>Sets:</label>
+                            <input type="number" name="sets" placeholder="-" value="{{ ejercicio[4] }}" class="input-field small-input border" required>
+                        </div>
+                        <div class="row-header">
+                            <i class='bx bx-time-five'></i>
+                            <span>Descanso</span>
+                            <input type="number" name="descanso" placeholder="-" value="{{ ejercicio[3] }}" class="input-field small-input border" required>
+                            <span>seg</span>
+                        </div>
+                </div>
             </div>
-            {% endfor %}
+        {% endfor %}
         </div>
         <div class="add-exercise button" onclick="addEjercicio()">+ Agregar Ejercicio</div>
         <button type="submit" class="button submit-button">Actualizar Rutina</button>
@@ -36,17 +49,31 @@
         const newEjercicio = document.createElement('div');
         newEjercicio.classList.add('ejercicio-row');
         newEjercicio.innerHTML = `
-            <label>Ejercicio:</label>
-            <select name="ejercicio" required>
-                {% for ejercicio in todos_ejercicios %}
-                <option value="{{ ejercicio[0] }}">{{ ejercicio[1] }}</option>
-                {% endfor %}
-            </select>
-            <label>Descanso (segundos):</label>
-            <input type="number" name="descanso" required>
-            <label>Sets:</label>
-            <input type="number" name="sets" required>
-            <button type="button" onclick="removeEjercicio(this)">Eliminar</button>
+            <div class="exContainer">
+                <div class="exercise-row">
+                    <div class="title-group">
+                        <i class='bx bx-dumbbell title-icon' ></i>
+                        <select name="ejercicio" required>
+                            {% for ejercicio in todos_ejercicios %}
+                                <option value="{{ ejercicio[0] }}">{{ ejercicio[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <a onclick="removeEjercicio(this.parentElement)"><i class='bx bx-trash remove-exercise' ></i></a>
+                    </div>
+                <div class="exercise-row">
+                        <div>
+                            <label>Sets:</label>
+                            <input type="number" name="sets" placeholder="-" class="input-field small-input border" required>
+                        </div>
+                        <div class="row-header">
+                                    <i class='bx bx-time-five'></i>
+                                    <span>Descanso</span>
+                                    <input type="number" name="descanso" placeholder="-" class="input-field small-input border" required>
+                                    <span>seg</span>
+                        </div>
+                </div>
+            </div>
         `;
         container.appendChild(newEjercicio);
     }

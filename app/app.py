@@ -120,32 +120,36 @@ def crear_rutina():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        nombre_rutina = request.form['nombre_rutina']
-        usuario = session['usuario']
+        try:
+            nombre_rutina = request.form['nombre_rutina']
+            usuario = session['usuario']
 
-        cursor = conexion.connection.cursor()
-        # Crear la rutina
-        sql_rutina = "INSERT INTO rutina (Nombre, usuario) VALUES (%s, %s)"
-        cursor.execute(sql_rutina, (nombre_rutina, usuario))
-        conexion.connection.commit()
-        rutina_id = cursor.lastrowid
-
-        ejercicios = request.form.getlist('ejercicio')
-        descansos = request.form.getlist('descanso')
-        sets = request.form.getlist('sets')
-        print(sets)
-        for i in range(len(ejercicios)):
-            sql_rutina_ejercicio = "INSERT INTO rutina_ejercicio (idRutina, idEjercicio, descanso, sets) VALUES (%s, %s, %s, %s)"
-            cursor.execute(sql_rutina_ejercicio, (rutina_id, ejercicios[i], descansos[i], sets[i]))
+            cursor = conexion.connection.cursor()
+            # Crear la rutina
+            sql_rutina = "INSERT INTO rutina (Nombre, usuario) VALUES (%s, %s)"
+            cursor.execute(sql_rutina, (nombre_rutina, usuario))
             conexion.connection.commit()
+            rutina_id = cursor.lastrowid
 
-        return redirect(url_for('dashboard'))
+            ejercicios = request.form.getlist('ejercicio')
+            descansos = request.form.getlist('descanso')
+            sets = request.form.getlist('sets')
+
+            for i in range(len(ejercicios)):
+                sql_rutina_ejercicio = "INSERT INTO rutina_ejercicio (idRutina, idEjercicio, descanso, sets) VALUES (%s, %s, %s, %s)"
+                cursor.execute(sql_rutina_ejercicio, (rutina_id, ejercicios[i], descansos[i], sets[i]))
+                conexion.connection.commit()
+
+            return redirect(url_for('dashboard'))
+        except KeyError as e:
+            return f"Error en el formulario: Falta el campo {str(e)}", 400
 
     cursor = conexion.connection.cursor()
     cursor.execute("SELECT idEjercicio, Nombre FROM ejercicio")
     ejercicios = cursor.fetchall()
     
     return render_template('crear_rutina.html', ejercicios=ejercicios)
+
 
 @app.route('/editar_rutina/<int:id>', methods=['GET', 'POST'])
 def editar_rutina(id):
@@ -307,7 +311,7 @@ def historial():
     data = {}
     try:
         cursor = conexion.connection.cursor()
-        sql = "SELECT idSesion, Fecha, Duracion, Finalizado FROM sesion WHERE usuario = %s ORDER BY Fecha"
+        sql = "SELECT idSesion, Fecha, Duracion, volumen, numSets FROM sesion WHERE usuario = %s ORDER BY Fecha"
         cursor.execute(sql, (session['usuario'],))
         sesiones = cursor.fetchall()
         data['sesiones'] = sesiones
