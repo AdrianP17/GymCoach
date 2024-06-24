@@ -4,15 +4,138 @@
 
 {% block body %}
 <h1 class="title">Bienvenido {{ usuario }}</h1>
-<div class="card-ai">
-    <h2 class="card-title">
-        Asistente de entrenamiento
-    </h2>
-    <p class="card-description">
-        ¿Necesitas ayuda con tu rutina de entrenamiento? ¡Pregúntame!
-    </p>
-    <a href="{{ url_for('asistente') }}" class="card-ai-btn">Iniciar asistente</a>
+<div class="dashboard__info">
+    <div>
+        <div class="card-ai">
+            <h2 class="card-title">
+                Asistente de entrenamiento
+            </h2>
+            <p class="card-description">
+                ¿Necesitas ayuda con tu rutina de entrenamiento? ¡Pregúntame!
+            </p>
+            <a href="{{ url_for('asistente') }}" class="card-ai-btn">Iniciar asistente</a>
+        </div>
+        <div style="margin-top: 20px;">
+            <div id="month" class="month"></div>
+            <div class="checklist" id="checklist"></div>
+        </div>
+    </div>
+    <div class="chart-container">
+        <h3 class="section-subtitle">Volumen por semana (kg)</h1>
+        <canvas id="volumenChart"></canvas>
+    </div>
 </div>
-<a href="{{ url_for('logout') }}">Cerrar sesión</a>
+<div class="flex-container">
+    <div class="card-stats">
+        <div class="card-stats-item">
+            <h3>Total de Sesiones</h3>
+            <p id="totalSesiones"></p>
+        </div>
+        <div class="card-stats-item">
+            <h3>Total de Sets</h3>
+            <p id="totalSets"></p>
+        </div>
+    </div>
+</div>
 
+
+
+
+<a href="{{ url_for('logout') }}">Cerrar sesión</a>
+<script>
+    async function fetchEstadisticas() {
+        const response = await fetch('/api/estadisticas');
+        const data = await response.json();
+        return data;
+    }
+
+    async function renderChart() {
+        const data = await fetchEstadisticas();
+
+        // Actualizar contadores
+        document.getElementById('totalSesiones').textContent = data.total_sesiones;
+        document.getElementById('totalSets').textContent = data.total_sets;
+
+        // Configurar Chart.js
+        const ctx = document.getElementById('volumenChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.semanas,
+                datasets: [{
+                    label: ' Volumen total',
+                    data: data.volumen,
+                    backgroundColor: 'rgba(255, 255, 255, 1)',
+                    borderColor: 'rgba(255, 255, 255, 1)',
+                    borderWidth: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                }
+            }
+        });
+    }
+    async function fetchChecklistSemanal() {
+            const response = await fetch('/api/checklist_semanal');
+            const data = await response.json();
+            return data;
+        }
+
+        function formatDate(dateStr) {
+            const date = moment.tz(dateStr, "America/Lima");
+            return date.locale('es').format('dddd D');
+        }
+
+        async function renderChecklist() {
+            const data = await fetchChecklistSemanal();
+            const checklistElement = document.getElementById('checklist');
+            const monthElement = document.getElementById('month');
+            const todayStr = moment.tz("America/Lima").format('YYYY-MM-DD');
+
+            if (data.dias_semana.length > 0) {
+                const firstDate = moment.tz(data.dias_semana[0], "America/Lima");
+                const monthName = firstDate.locale('es').format('MMMM YYYY');
+                monthElement.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+            }
+
+            data.dias_semana.forEach(dia => {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('day');
+                const iconElement = document.createElement('i');
+
+                if (data.dias_con_sesion.includes(dia)) {
+                    dayElement.classList.add('completed');
+                    iconElement.classList.add('bx', 'bxs-check-circle', 'icon');
+                } else {
+                    iconElement.classList.add('bx', 'bxs-no-entry', 'icon');
+                }
+
+                if (dia === todayStr) {
+                    const todayIndicator = document.createElement('span');
+                    todayIndicator.classList.add('today');
+                    todayIndicator.textContent = 'Hoy';
+                    dayElement.appendChild(todayIndicator);
+                }
+
+                const dayText = document.createElement('span');
+                dayText.textContent = formatDate(dia);
+                dayElement.appendChild(dayText);
+                dayElement.appendChild(iconElement);
+                checklistElement.appendChild(dayElement);
+            });
+        }
+
+    renderChecklist();
+    renderChart();
+</script>
 {% endblock %}

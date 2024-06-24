@@ -1,9 +1,10 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
+import MySQLdb.cursors
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 import openai
-# client = openai.Client(api_key='sk-proj-Q8QP6ZX4tbYM9EC35iWNT3BlbkFJyNP2MSkxMrsykzjgg0EC')
+import markdown2
 app = Flask(__name__)
 app.secret_key = 'super_secret_key' 
 #Conexion MYSQL
@@ -14,6 +15,23 @@ app.config['MYSQL_DB'] = 'gym1'
 
 conexion = MySQL(app)
 
+def getUserData(usuario):
+        cursor = conexion.connection.cursor()
+        sql = "SELECT usuario, nombre, apellido, correo, altura, peso, edad FROM usuario WHERE usuario = %s"
+        cursor.execute(sql, (usuario,))
+        user_info = cursor.fetchone()
+
+        if user_info:
+            user_data = {
+                'usuario': user_info[0],
+                'nombre': user_info[1],
+                'apellido': user_info[2],
+                'correo': user_info[3],
+                'altura': user_info[4],
+                'peso': user_info[5],
+                'edad': user_info[6]
+            }
+            return user_data
 
 #===============REGISTER==========================
 @app.route('/register', methods=['GET', 'POST'])
@@ -57,18 +75,74 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
-    if 'usuario' in session:
-        usuario = session['usuario']
-        return render_template('dashboard.html', usuario=usuario)
-    else:
+    if 'usuario' not in session:
         return redirect(url_for('login'))
+
+    usuario = session['usuario']
+    user_data = getUserData(usuario)
+    return render_template('dashboard.html',**user_data)
+
+@app.route('/api/estadisticas')
+def estadisticas():
+    cursor = conexion.connection.cursor(MySQLdb.cursors.DictCursor)
+    query = """
+    SELECT YEARWEEK(fecha, 1) AS semana,
+           COUNT(*) AS numero_de_sesiones,
+           SUM(numSets) AS sets,
+           SUM(volumen) AS total_volumen
+    FROM Sesion
+    WHERE usuario = "adrianpal"
+      AND YEAR(fecha) = YEAR(CURDATE())
+      AND MONTH(fecha) = MONTH(CURDATE())
+    GROUP BY YEARWEEK(fecha, 1)
+    ORDER BY semana;
+    """
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    
+    total_sesiones = sum(row["numero_de_sesiones"] for row in rows)
+    total_sets = sum(row["sets"] for row in rows)
+
+    data = {
+        "semanas": [f"Semana {i+1}" for i in range(len(rows))],
+        "volumen": [row["total_volumen"] for row in rows],
+        "total_sesiones": total_sesiones,
+        "total_sets": total_sets
+    }
+
+    return jsonify(data)
+
+@app.route('/api/checklist_semanal')
+def checklist_semanal():
+    cursor = conexion.connection.cursor(MySQLdb.cursors.DictCursor)
+    query = """
+    SELECT DATE(fecha) AS dia
+    FROM Sesion
+    WHERE usuario = 'adrianpal'
+      AND YEARWEEK(fecha, 1) = YEARWEEK(CURDATE(), 1);
+    """
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    
+    dias_con_sesion = [row['dia'].strftime('%Y-%m-%d') for row in rows]
+    
+    # Obtener los 7 días de la semana actual
+    hoy = datetime.now()
+    inicio_semana = hoy - timedelta(days=hoy.weekday())  # Lunes de la semana actual
+    dias_semana = [(inicio_semana + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
+
+    data = {
+        "dias_semana": dias_semana,
+        "dias_con_sesion": dias_con_sesion
+    }
+
+    return jsonify(data)
+
 
 @app.route('/logout')
 def logout():
     session.pop('usuario', None)
     return redirect(url_for('login'))
-
-
 @app.route('/')
 def home():
     if 'usuario' in session:
@@ -77,27 +151,13 @@ def home():
         return redirect(url_for('login'))
 
 
-@app.route('/ejercicios')
-def ejercicios():
-    data={}
-    try:
-        cursor = conexion.connection.cursor()
-        sql = "SELECT IdMusculo, Tipo from musculo order BY Tipo ASC"
-        cursor.execute(sql)
-        tipos = cursor.fetchall()
-        print(tipos)
-        data['musculos'] = tipos
-        data['mensaje'] = 'Exito'
-        data['numero_ejercicios']= len(tipos)
-    except Exception as ex:
-        data['mensaje']= 'Error...'
-    return render_template('ejercicios.html',data=data)
 
 
 @app.route('/rutinas')
 def rutinas():
     if 'usuario' in session:
         usuario = session['usuario']
+        user_data = getUserData(usuario)
         data={}
         try:
             cursor = conexion.connection.cursor()
@@ -110,7 +170,7 @@ def rutinas():
             data['numero_rutinas'] = len(rutinas)
         except Exception as ex:
             data['mensaje']= 'Error...'
-        return render_template('rutinas.html', usuario=usuario,data=data)
+        return render_template('rutinas.html', **user_data,data=data)
     else:
         return redirect(url_for('login'))
 
@@ -118,6 +178,23 @@ def rutinas():
 def crear_rutina():
     if 'usuario' not in session:
         return redirect(url_for('login'))
+
+    usuario = session['usuario']
+    cursor = conexion.connection.cursor()
+    sql = "SELECT usuario, nombre, apellido, correo, altura, peso, edad FROM usuario WHERE usuario = %s"
+    cursor.execute(sql, (usuario,))
+    user_info = cursor.fetchone()
+
+    if user_info:
+        user_data = {
+            'usuario': user_info[0],
+            'nombre': user_info[1],
+            'apellido': user_info[2],
+            'correo': user_info[3],
+            'altura': user_info[4],
+            'peso': user_info[5],
+            'edad': user_info[6]
+        }
 
     if request.method == 'POST':
         try:
@@ -148,15 +225,30 @@ def crear_rutina():
     cursor.execute("SELECT idEjercicio, Nombre FROM ejercicio")
     ejercicios = cursor.fetchall()
     
-    return render_template('crear_rutina.html', ejercicios=ejercicios)
+    return render_template('crear_rutina.html', **user_data,ejercicios=ejercicios)
 
 
 @app.route('/editar_rutina/<int:id>', methods=['GET', 'POST'])
 def editar_rutina(id):
     if 'usuario' not in session:
         return redirect(url_for('login'))
-
+    usuario = session['usuario']
     cursor = conexion.connection.cursor()
+    sql = "SELECT usuario, nombre, apellido, correo, altura, peso, edad FROM usuario WHERE usuario = %s"
+    cursor.execute(sql, (usuario,))
+    user_info = cursor.fetchone()
+
+    if user_info:
+        user_data = {
+                'usuario': user_info[0],
+                'nombre': user_info[1],
+                'apellido': user_info[2],
+                'correo': user_info[3],
+                'altura': user_info[4],
+                'peso': user_info[5],
+                'edad': user_info[6]
+            }
+
 
     if request.method == 'POST':
         nombre_rutina = request.form['nombre_rutina']
@@ -203,7 +295,7 @@ def editar_rutina(id):
     cursor.execute("SELECT idEjercicio, Nombre FROM ejercicio")
     todos_ejercicios = cursor.fetchall()
     
-    return render_template('editar_rutina.html', rutina=rutina, ejercicios_rutina=ejercicios_rutina, todos_ejercicios=todos_ejercicios)
+    return render_template('editar_rutina.html', **user_data,rutina=rutina, ejercicios_rutina=ejercicios_rutina, todos_ejercicios=todos_ejercicios)
 
 @app.route('/eliminar_rutina/<int:id>', methods=['POST'])
 def eliminar_rutina(id):
@@ -232,8 +324,22 @@ def eliminar_rutina(id):
 def empezar_rutina(id):
     if 'usuario' not in session:
         return redirect(url_for('login'))
-
+    usuario = session['usuario']
     cursor = conexion.connection.cursor()
+    sql = "SELECT usuario, nombre, apellido, correo, altura, peso, edad FROM usuario WHERE usuario = %s"
+    cursor.execute(sql, (usuario,))
+    user_info = cursor.fetchone()
+
+    if user_info:
+        user_data = {
+                'usuario': user_info[0],
+                'nombre': user_info[1],
+                'apellido': user_info[2],
+                'correo': user_info[3],
+                'altura': user_info[4],
+                'peso': user_info[5],
+                'edad': user_info[6]
+            }
 
     if request.method == 'POST':
         duracion = request.form['duracion']
@@ -298,7 +404,7 @@ def empezar_rutina(id):
                 'peso': 0
             })
 
-    return render_template('empezar_rutina.html', rutina=rutina, grouped_ejercicios=grouped_ejercicios)
+    return render_template('empezar_rutina.html', **user_data,rutina=rutina, grouped_ejercicios=grouped_ejercicios)
 
 
 
@@ -307,7 +413,22 @@ def empezar_rutina(id):
 def historial():
     if 'usuario' not in session:
         return redirect(url_for('login'))
-    
+    usuario = session['usuario']
+    cursor = conexion.connection.cursor()
+    sql = "SELECT usuario, nombre, apellido, correo, altura, peso, edad FROM usuario WHERE usuario = %s"
+    cursor.execute(sql, (usuario,))
+    user_info = cursor.fetchone()
+
+    if user_info:
+        user_data = {
+                'usuario': user_info[0],
+                'nombre': user_info[1],
+                'apellido': user_info[2],
+                'correo': user_info[3],
+                'altura': user_info[4],
+                'peso': user_info[5],
+                'edad': user_info[6]
+            }
     data = {}
     try:
         cursor = conexion.connection.cursor()
@@ -318,13 +439,28 @@ def historial():
         data['mensaje'] = 'Exito' if sesiones else 'No tienes historial de sesiones.'
     except Exception as ex:
         data['mensaje'] = 'Error...'
-    return render_template('historial.html', data=data)
+    return render_template('historial.html', **user_data,data=data)
 
 @app.route('/historial/<int:id_sesion>')
 def detalle_sesion(id_sesion):
     if 'usuario' not in session:
         return redirect(url_for('login'))
+    usuario = session['usuario']
+    cursor = conexion.connection.cursor()
+    sql = "SELECT usuario, nombre, apellido, correo, altura, peso, edad FROM usuario WHERE usuario = %s"
+    cursor.execute(sql, (usuario,))
+    user_info = cursor.fetchone()
 
+    if user_info:
+        user_data = {
+                'usuario': user_info[0],
+                'nombre': user_info[1],
+                'apellido': user_info[2],
+                'correo': user_info[3],
+                'altura': user_info[4],
+                'peso': user_info[5],
+                'edad': user_info[6]
+            }
     data = {}
     try:
         cursor = conexion.connection.cursor()
@@ -383,25 +519,71 @@ def detalle_sesion(id_sesion):
         data['detalles'] = False
         data['mensaje'] = 'Error...'
 
-    return render_template('detalle_sesion.html', data=data)
+    return render_template('detalle_sesion.html', **user_data,data=data)
 
 
 
 @app.route('/asistente', methods=['GET', 'POST'])
 def asistente():
+    if 'usuario' not in session:
+        return redirect(url_for('login'))
+    usuario = session['usuario']
+    cursor = conexion.connection.cursor()
+    sql = "SELECT usuario, nombre, apellido, correo, altura, peso, edad FROM usuario WHERE usuario = %s"
+    cursor.execute(sql, (usuario,))
+    user_info = cursor.fetchone()
+
+    if user_info:
+        user_data = {
+                'usuario': user_info[0],
+                'nombre': user_info[1],
+                'apellido': user_info[2],
+                'correo': user_info[3],
+                'altura': user_info[4],
+                'peso': user_info[5],
+                'edad': user_info[6]
+            }
+        
+    if 'chat_history' not in session:
+        session['chat_history'] = []
+
+    # Recuperar el historial de chats desde la base de datos
+    sql_history = "SELECT role, content FROM chat_history WHERE usuario = %s ORDER BY timestamp"
+    cursor.execute(sql_history, (usuario,))
+    chat_history = cursor.fetchall()
+
+    # Convertir el historial en el formato necesario para la API de OpenAI
+    session['chat_history'] = [{"role": row[0], "content": row[1]} for row in chat_history]
+
     data = {}
     if request.method == 'POST':
         user_input = request.form['user_input']
+        session['chat_history'].append({"role": "user", "content": user_input})
+
+
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo-0125",
             messages=[
-                {"role": "system", "content": "Tú eres un gran asistente, brindas ayuda sobre rutinas de gimnasio especializadas."},
-                {"role": "user", "content": user_input}
-        ],
-        temperature=0,
+                {"role": "system", "content": "Es un asistente serio.","max_tokens": 200},
+
+        ] + session['chat_history'],
+        temperature=0.2,
+        max_tokens=200,
         )
-        data['respuesta'] = response.choices[0].message.content
-    return render_template('asistente.html', data=data)
+        bot_response = response.choices[0].message.content
+        session['chat_history'].append({"role": "assistant", "content": bot_response})
+
+        # Guardar el nuevo mensaje en la base de datos
+        sql_insert = "INSERT INTO chat_history (usuario, role, content) VALUES (%s, %s, %s)"
+        cursor.execute(sql_insert, (usuario, "user", user_input))
+        cursor.execute(sql_insert, (usuario, "assistant", bot_response))
+        conexion.connection.commit()
+
+        data['respuesta'] = markdown2.markdown(bot_response)
+    # Convertir el historial del asistente a HTML usando markdown2
+    session['chat_history'] = [{"role": message['role'], "content": markdown2.markdown(message['content'])} for message in session['chat_history']]
+    
+    return render_template('asistente.html', chat_history=session['chat_history'],**user_data,data=data)
 
 
 def pagina_no_encontrada(error):
