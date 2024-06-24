@@ -7,14 +7,31 @@
     <title>{% block title%}{% endblock %}</title>
     <link rel="stylesheet" href="{{url_for('static', filename='css/layout.css')}}">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/es.min.js"></script>
 </head>
 <body>
     <div class="header">
         <h3 class="logo">GymCoach</h3>
-        <a href="#" class="profile">
+        <a href="" class="profile" id="profile-link">
             <i class='bx bx-user-circle'></i>
             <p>Perfil</p>
         </a>
+    </div>
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 class="modal-title">Información del Usuario</h2>
+            <p class="modal-text">Usuario: {{ usuario }}</p>
+            <p class="modal-text">Nombre: {{ nombre }}</p>
+            <p class="modal-text">Apellido: {{ apellido }}</p>
+            <p class="modal-text">Correo: {{ correo }}</p>
+            <p class="modal-text">Altura: {{ altura }} cm</p>
+            <p class="modal-text">Peso: {{ peso }} kg</p>
+            <p class="modal-text">Edad: {{ edad }} años</p>
+        </div>
     </div>
     <div class="page">
         <div class="menu">
@@ -45,5 +62,5 @@
     </div>
     
 </body>
-<script src="/app/static/js/main.js"></script>
+<script src="{{url_for('static', filename='js/main.js')}}"></script>
 </html>
