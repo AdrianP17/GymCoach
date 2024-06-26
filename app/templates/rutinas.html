@@ -25,12 +25,12 @@
                     </div>
                     
                 </div>
-                <a class="btn" href="{{ url_for('empezar_rutina', id=rutina[0]) }}">Empezar rutina</a>
+                <a class="btn" href="{{ url_for('empezar_rutina', id=rutina[0]) }}">Empezar</a>
             </div>
         {% endfor %}
     {%endif%}
 </div>
-<a class="btn-crear-rutina" href="{{ url_for('crear_rutina') }}">Crear Nueva Rutina</a>
+<a class="btn-crear-rutina" href="{{ url_for('crear_rutina') }}">+ Crear Nueva Rutina</a>
 
 
 {% endblock %}
