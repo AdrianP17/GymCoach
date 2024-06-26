@@ -15,7 +15,7 @@
             </p>
             <a href="{{ url_for('asistente') }}" class="card-ai-btn">Iniciar asistente</a>
         </div>
-        <div style="margin-top: 20px;">
+        <div class="habit" style="margin-top: 20px;">
             <div id="month" class="month"></div>
             <div class="checklist" id="checklist"></div>
         </div>
@@ -26,23 +26,25 @@
     </div>
 </div>
 <div class="flex-container">
+    <div id="chartContainer">
+        <h3 class="section-subtitle">Sets por sesión</h1>
+        <canvas id="myChart"></canvas>
+    </div>
     <div class="card-stats">
         <div class="card-stats-item">
-            <h3>Total de Sesiones</h3>
             <p id="totalSesiones"></p>
+            <h3>sesiones</h3>
         </div>
         <div class="card-stats-item">
-            <h3>Total de Sets</h3>
             <p id="totalSets"></p>
+            <h3>sets</h3>
         </div>
     </div>
 </div>
 
 
-
-
-<a href="{{ url_for('logout') }}">Cerrar sesión</a>
 <script>
+    const usuario = "{{ usuario }}";
     async function fetchEstadisticas() {
         const response = await fetch('/api/estadisticas');
         const data = await response.json();
@@ -59,15 +61,13 @@
         // Configurar Chart.js
         const ctx = document.getElementById('volumenChart').getContext('2d');
         const myChart = new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: data.semanas,
                 datasets: [{
                     label: ' Volumen total',
                     data: data.volumen,
                     backgroundColor: 'rgba(255, 255, 255, 1)',
-                    borderColor: 'rgba(255, 255, 255, 1)',
-                    borderWidth: 3,
                 }]
             },
             options: {
@@ -117,7 +117,7 @@
                     dayElement.classList.add('completed');
                     iconElement.classList.add('bx', 'bxs-check-circle', 'icon');
                 } else {
-                    iconElement.classList.add('bx', 'bxs-no-entry', 'icon');
+                    iconElement.classList.add('bx', 'bx-x', 'icon');
                 }
 
                 if (dia === todayStr) {
@@ -134,7 +134,75 @@
                 checklistElement.appendChild(dayElement);
             });
         }
+    
+        let chartInstance = null;
 
+        async function fetchDatos(url) {
+            const response = await fetch(url);
+            const data = await response.json();
+            return data;
+        }
+
+        async function cargarDatos() {
+            const url = `/api/sets_por_sesion`;
+            return await fetchDatos(url);
+        }
+        function formatFecha(fechaStr) {
+            const date = new Date(fechaStr);
+            const options = { month: 'short', day: 'numeric' };
+            return date.toLocaleDateString('es-ES', options);
+        }
+
+        function crearGrafico(data) {
+            const labels = data.map(d => formatFecha(d.Fecha));
+            const valores = data.map(d => d.numSets);
+            const label = 'Sets';
+            const backgroundColor = 'rgba(255, 255, 255, 1)';
+            const borderColor = 'rgba(255, 255, 255, 1)';
+
+            const ctx = document.getElementById('myChart').getContext('2d');
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: valores,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                    ,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                    }
+                },
+                
+            });
+        }
+
+        async function actualizarGrafico() {
+            const data = await cargarDatos();
+            data.reverse();
+            crearGrafico(data);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            actualizarGrafico();  // Cargar el gráfico por defecto al cargar la página
+        });
     renderChecklist();
     renderChart();
 </script>

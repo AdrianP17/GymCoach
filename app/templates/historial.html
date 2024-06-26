@@ -4,6 +4,9 @@
 
 {% block body %}
 <h1 class="title">Historial de Sesiones</h1>
+    {% if data['sesiones'] == [] %}
+        <p class="empty">No tienes sesiones registradas</p>
+    {% endif %}
     <div class="historial__container">
         {% for sesion in data['sesiones'] %}
         

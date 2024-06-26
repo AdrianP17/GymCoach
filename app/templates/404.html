@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://api.fontshare.com/v2/css?f[]=chillax@200,400,500,600,700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static', filename='css/layout.css')}}">
     <title>404 not found</title>
 </head>
-<body">
-    <p>Pagina no encontrada</p>
+<body>
+    <div class="center">
+        <h1>404</h1>
+        <h2>Page not found</h2>
+        <p>Lo siento, la página no existe.</p>
+        <a href="{{url_for('home')}}" class="btn-error">Regresar</a>
+    </div>
 </body>
 </html>

@@ -16,21 +16,39 @@
     <div class="header">
         <h3 class="logo">GymCoach</h3>
         <a href="" class="profile" id="profile-link">
-            <i class='bx bx-user-circle'></i>
+            <i class='bx bx-user'></i>
             <p>Perfil</p>
         </a>
     </div>
     <div id="profile-modal" class="modal">
         <div class="modal-content">
-            <span class="close-btn">&times;</span>
+            <i class='bx bx-x close-btn'></i>
             <h2 class="modal-title">Información del Usuario</h2>
-            <p class="modal-text">Usuario: {{ usuario }}</p>
-            <p class="modal-text">Nombre: {{ nombre }}</p>
-            <p class="modal-text">Apellido: {{ apellido }}</p>
-            <p class="modal-text">Correo: {{ correo }}</p>
-            <p class="modal-text">Altura: {{ altura }} cm</p>
-            <p class="modal-text">Peso: {{ peso }} kg</p>
-            <p class="modal-text">Edad: {{ edad }} años</p>
+            <div class="modal-container">
+                <div class="modal-column">
+                    <p class="modal-text">Nombre</p>
+                    <p class="modal-input">{{ nombre }}</p>
+            
+                    <p class="modal-text">Apellido</p>
+                    <p class="modal-input">{{ apellido }}</p>
+            
+                    <p class="modal-text">Correo</p>
+                    <p class="modal-input">{{ correo }}</p>
+                </div>
+                <div class="modal-column">
+                    <p class="modal-text">Altura</p>
+                    <p class="modal-input"> {{ altura }} m</p>
+            
+                    <p class="modal-text">Peso</p>
+                    <p class="modal-input">{{ peso }} kg</p>
+            
+                    <p class="modal-text">Edad</p>
+                    <p class="modal-input"> {{ edad }} años</p>
+                </div>
+            </div>
+            
+
+            
         </div>
     </div>
     <div class="page">
@@ -54,6 +72,7 @@
                     <p>Asistente</p>
                 </a>
             </ul>
+            <a class="logout" href="{{ url_for('logout') }}">Cerrar sesión</a>
         </div>
         <div class="container">
             {% block body %}

@@ -5,8 +5,9 @@
 {% endblock %}
 
 {% block body %}
+<a href="{{ url_for('rutinas') }}" class="back"><i class='bx bx-arrow-back'></i></a>
 <div class="container__tabla">
-    <h2>Empezar Rutina: {{ rutina[0] }}</h2>
+    <h2 class="section-title">Rutina {{ rutina[0] }}</h2>
     <div id="timer" class="timer">00:00:00</div>
     <div id="rest-timer" class="rest-timer" style="display: none;">Descanso: 00</div>
     <form method="POST" onsubmit="stopTimer()">
@@ -37,8 +38,9 @@
                         <span>Set {{ loop.index }}</span>
                         <input type="hidden" name="set_id" value="{{ set.idSet }}">
                         <input type="hidden" name="ejercicio_id_{{ set.idSet }}" value="{{ ejercicio_id }}">
-                        <input type="number" name="reps" placeholder="-" value="{{ set.reps }}" class="input-field small-input" required>
-                        <input type="number" name="peso" placeholder="-" value="{{ set.peso }}" class="input-field small-input" required>
+                        <input type="number" name="reps" placeholder="-" value="{{ set.reps }}" class="input-field small-input">
+                        <input type="number" name="peso" placeholder="-" value="{{ set.peso }}" class="input-field small-input">
+                        <input type="hidden" name="set_completed" value="0">
                         <button type="button" class="toggle-btn" onclick="toggleCompleted(this)">
                             <i class='bx bx-check-square'></i>
                         </button>
@@ -51,7 +53,6 @@
         <input type="hidden" name="duracion" id="duracion">
         <button type="submit" class="button submit-button">Finalizar Rutina</button>
     </form>
-    <button class="cancel-btn" onclick="cancelarRutina()">Cancelar Rutina</button>
 </div>
     <script>
         let totalTimer;
@@ -80,20 +81,23 @@
         }
 
         function toggleCompleted(button) {
-        const parentSetRow = button.parentElement;
-        const isCompleted = parentSetRow.classList.toggle('completed-set');
+            const parentSetRow = button.parentElement;
+            const isCompleted = parentSetRow.classList.toggle('completed-set');
+            const completedInput = parentSetRow.querySelector('input[name="set_completed"]');
 
-        if (isCompleted) {
-            button.innerHTML = "<i class='bx bxs-check-square completed''></i>";
-            const descanso = parentSetRow.getAttribute('data-descanso');
-            currentRestTime = parseInt(descanso);
-            startRestTimer(currentRestTime);
-        } else {
-            button.innerHTML = "<i class='bx bx-check-square'></i>";
-            clearInterval(restTimer);
-            document.getElementById('rest-timer').style.display = 'none';
+            if (isCompleted) {
+                button.innerHTML = "<i class='bx bxs-check-square completed''></i>";
+                completedInput.value = "1";
+                const descanso = parentSetRow.getAttribute('data-descanso');
+                currentRestTime = parseInt(descanso);
+                startRestTimer(currentRestTime);
+            } else {
+                button.innerHTML = "<i class='bx bx-check-square'></i>";
+                completedInput.value = "0";
+                clearInterval(restTimer);
+                document.getElementById('rest-timer').style.display = 'none';
+            }
         }
-    }
 
         function startRestTimer(duration) {
             clearInterval(restTimer);
@@ -124,16 +128,18 @@
         });
 
         document.querySelector('form').addEventListener('submit', function(event) {
-        const completedSets = document.querySelectorAll('.completed-set');
-        if (completedSets.length === 0) {
-            event.preventDefault();
-            alert('No has completado ningún ejercicio.');
-        } else {
-            completedSets.forEach(set => {
-                set.querySelectorAll('input').forEach(input => input.disabled = false);
-            });
-        }
-    });
+            const completedSets = document.querySelectorAll('.completed-set');
+            if (completedSets.length === 0) {
+                event.preventDefault();
+                alert('No has completado ningún ejercicio.');
+            } else {
+                document.querySelectorAll('.set-row').forEach(setRow => {
+                    if (!setRow.classList.contains('completed-set')) {
+                        setRow.querySelectorAll('input').forEach(input => input.disabled = true);
+                    }
+                });
+            }
+        });
     </script>
         
 {% endblock %}
