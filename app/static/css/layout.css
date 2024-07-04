@@ -6,7 +6,7 @@
     scroll-behavior: smooth;
 }
 :root{
-    --background: #0C0C0E ;
+    --background: #0f0f0f ;
     --lighter-background: #141416;
 }
 /* Personalizar el fondo del scrollbar */

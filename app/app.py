@@ -13,7 +13,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = '1234'
 app.config['MYSQL_DB'] = 'gym1'
-client = openai.Client(api_key="sk-proj-oGUxn4Z5Tr8G7NbQSeJeT3BlbkFJ4hgS0UUOq1tkKuofv1EB")
+client = 0
 conexion = MySQL(app)
 
 def getUserData(usuario):
@@ -571,32 +571,33 @@ def asistente():
         conexion.connection.commit()
 
     data = {}
-    if request.method == 'POST':
-        user_input = request.form['user_input']
-        session['chat_history'].append({"role": "user", "content": user_input})
+    if(client):
+        if request.method == 'POST':
+            user_input = request.form['user_input']
+            session['chat_history'].append({"role": "user", "content": user_input})
 
 
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo-0125",
-            messages=[
-                {"role": "system", "content": "Es un asistente serio que solo ayuda con elaboración de rutinas de ejercicio.","max_tokens": 200},
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo-0125",
+                messages=[
+                    {"role": "system", "content": "Es un asistente serio que solo ayuda con elaboración de rutinas de ejercicio.","max_tokens": 200},
 
-        ] + session['chat_history'],
-        temperature=0.2,
-        max_tokens=250,
-        )
-        bot_response = response.choices[0].message.content
-        session['chat_history'].append({"role": "assistant", "content": bot_response})
+            ] + session['chat_history'],
+            temperature=0.2,
+            max_tokens=250,
+            )
+            bot_response = response.choices[0].message.content
+            session['chat_history'].append({"role": "assistant", "content": bot_response})
 
-        # Guardar el nuevo mensaje en la base de datos
-        sql_insert = "INSERT INTO chat_history (usuario, role, content) VALUES (%s, %s, %s)"
-        cursor.execute(sql_insert, (usuario, "user", user_input))
-        cursor.execute(sql_insert, (usuario, "assistant", bot_response))
-        conexion.connection.commit()
+            # Guardar el nuevo mensaje en la base de datos
+            sql_insert = "INSERT INTO chat_history (usuario, role, content) VALUES (%s, %s, %s)"
+            cursor.execute(sql_insert, (usuario, "user", user_input))
+            cursor.execute(sql_insert, (usuario, "assistant", bot_response))
+            conexion.connection.commit()
 
-        data['respuesta'] = markdown2.markdown(bot_response)
-    # Convertir el historial del asistente a HTML usando markdown2
-    session['chat_history'] = [{"role": message['role'], "content": markdown2.markdown(message['content'])} for message in session['chat_history']]
+            data['respuesta'] = markdown2.markdown(bot_response)
+        # Convertir el historial del asistente a HTML usando markdown2
+        session['chat_history'] = [{"role": message['role'], "content": markdown2.markdown(message['content'])} for message in session['chat_history']]
     
     return render_template('asistente.html', chat_history=session['chat_history'],**user_data,data=data)
 
