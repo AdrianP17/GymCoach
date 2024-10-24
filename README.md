@@ -1,8 +1,8 @@
 # GymCoach
-Aplicación web que permite gestionar tus rutinas de ejercicios, con login-registro, estadísticas, y un asistente virtual usando la API de OpenAI. Fue realizada como proyecto de un curso de la universidad. 
-**Base de Datos:** MySQL
-**Backend:** Flask
-**Frontend:** HTML, CSS y JS
+Aplicación web que permite gestionar tus rutinas de ejercicios, con login-registro, estadísticas, y un asistente virtual usando la API de OpenAI. Fue realizada como proyecto del curso de Ingeniería de Requisitos. 
+- **Base de Datos:** MySQL
+- **Backend:** Flask
+- **Frontend:** HTML, CSS y JS
 
 ## Capturas
 ### Login y registro
