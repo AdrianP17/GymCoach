@@ -3,7 +3,7 @@ Aplicación web que permite gestionar tus rutinas de ejercicios, con login-regis
 **Base de Datos:** MySQL
 **Backend:** Flask
 **Frontend:** HTML, CSS y JS
----
+
 ## Capturas
 ### Login y registro
 ![image](https://github.com/user-attachments/assets/2595a53c-22ea-492f-8e94-05b3c4fa6fa1)
