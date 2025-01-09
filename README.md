@@ -3,7 +3,27 @@ Aplicación web que permite gestionar tus rutinas de ejercicios, con login-regis
 - **Base de Datos:** MySQL
 - **Backend:** Flask
 - **Frontend:** HTML, CSS y JS
+## Dependencias
 
+El proyecto requiere las siguientes dependencias:
+- Flask
+- Flask-MySQLdb
+- Werkzeug
+- OpenAI
+- Markdown2
+- Dotenv
+- Babel
+- Moment.js
+- Chart.js
+
+## Variables de entorno
+```
+MYSQL_HOST: MySQL host
+MYSQL_USER: MySQL username
+MYSQL_PASSWORD: MySQL password
+MYSQL_DB: MySQL database name
+API_KEY: OpenAI API key
+```
 ## Capturas
 ### Login y registro
 ![image](https://github.com/user-attachments/assets/2595a53c-22ea-492f-8e94-05b3c4fa6fa1)
