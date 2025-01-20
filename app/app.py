@@ -9,6 +9,11 @@ import openai
 import os
 import markdown2
 app = Flask(__name__)
+load_dotenv()
+
+api_key= os.getenv("API_KEY")
+client = openai.Client(api_key= api_key)
+
 app.secret_key = os.getenv('SECRET_KEY')
 # MySQL configuration
 mysql_host = os.getenv('MYSQL_HOST')
