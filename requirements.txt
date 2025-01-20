@@ -1,0 +1,9 @@
+Flask
+Flask-MySQLdb
+MySQL-python
+Werkzeug
+Babel
+python-dotenv
+openai
+markdown2
+Gunicorn
