@@ -13,8 +13,6 @@ El proyecto requiere las siguientes dependencias:
 - Markdown2
 - Dotenv
 - Babel
-- Moment.js
-- Chart.js
 
 ## Variables de entorno
 ```
